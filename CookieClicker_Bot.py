@@ -11,7 +11,7 @@ class SeleniumBot():
     def __init__(self):
         self.driver = webdriver.Chrome()
         self.driver.get("https://orteil.dashnet.org/cookieclicker/")
-        self.driver.implicitly_wait(1)
+        self.driver.implicitly_wait(2)
         consent = self.driver.find_element(By.CLASS_NAME,"fc-button")
         consent.click()
         langSelect = self.driver.find_element(By.CLASS_NAME,"langSelectButton")
@@ -40,6 +40,16 @@ class SeleniumBot():
         listener = keyboard.Listener(on_press=self.on_press)
         listener.start()
 
+    def buy_store_upgrade(self):
+        try:
+            store_upgrade = self.driver.find_element(By.ID,"upgrade0")
+            if store_upgrade.is_displayed() and store_upgrade.is_enabled():
+                store_upgrade.click()
+        except Exception as e:
+            print(f"Error in buy_store_upgrade: {e}")
+
+
+
     def buy_items(self):
         try:
             items = self.driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")
@@ -60,6 +70,7 @@ class SeleniumBot():
         while self.running:
             self.click_cookie()
             if self.timer > 3:
+                self.buy_store_upgrade()
                 self.buy_items()
                 self.timer = 0
             self.timer += 0.05
