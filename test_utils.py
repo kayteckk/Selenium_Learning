@@ -1,7 +1,6 @@
 from selenium.webdriver.common.by import By
 import pytest
 
-#@pytest.fixture
 def login(driver, url, username, password):
     driver.get(url)
     login_field = driver.find_element(By.ID, "user-name")
@@ -11,7 +10,6 @@ def login(driver, url, username, password):
     login_button = driver.find_element(By.ID, "login-button")
     login_button.click()
 
-#@pytest.fixture
 def add_to_cart(driver):
     login(driver, "https://www.saucedemo.com/", "standard_user", "secret_sauce")
     add_to_cart_button = driver.find_element(By.ID, "add-to-cart-sauce-labs-backpack")
