@@ -10,7 +10,7 @@ import json
 class SeleniumBot():
     def __init__(self):
         self.options = webdriver.ChromeOptions()
-        self.options.add_argument('--user-data-dir=YOUR_PATH_HERE') # <---- your path to Chrome should go here
+        self.options.add_argument('--user-data-dir=/Users/kajetankotarski/Library/Application Support/Google/Chrome/Profile 1') # <---- your path to Chrome should go here
         self.driver = webdriver.Chrome(options=self.options)
         self.driver.get("https://orteil.dashnet.org/cookieclicker/")
         self.load_local_storage()

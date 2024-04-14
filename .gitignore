@@ -1,0 +1,4 @@
+.DS_store
+.vscode
+__pycache__
+local_storage.json
