@@ -1,18 +1,13 @@
 import pytest
 from selenium.webdriver import Chrome
-from .login_page import LoginPage
-from .product_page import ProductPage
 from selenium.webdriver.common.by import By
-from .product_details_page import ProductDetailsPage
-from .shopping_cart_page import ShoppingCartPage
-from .checkout_page import CheckoutPage
+from lib.login_page import LoginPage
+from lib.product_page import ProductPage
+from lib.product_details_page import ProductDetailsPage
+from lib.shopping_cart_page import ShoppingCartPage
+from lib.checkout_page import CheckoutPage
+from conftest import driver
 
-@pytest.fixture(scope="function")
-def driver():
-    driver = Chrome()
-    driver.implicitly_wait(1)
-    yield driver
-    driver.quit()
 
 def test_login_logout(driver):
     login_page = LoginPage(driver)
@@ -51,9 +46,9 @@ def test_remove_from_cart(driver):
     login_page.login("standard_user", "secret_sauce")
 
     product_page.add_to_cart()
-    assert product_page.get_shopping_cart_count() == "1"
+    pytest.assume(product_page.get_shopping_cart_count() == "1")
     shopping_cart_page.go_to_cart()
-    assert shopping_cart_page.remove_from_cart() == True
+    pytest.assume(shopping_cart_page.remove_from_cart() == True)
 
 def test_sorting_asc(driver):
     login_page = LoginPage(driver)
@@ -105,11 +100,12 @@ def test_checkout(driver):
 
     checkout_page.fill_checkout_form("John", "Doe", "12345")
 
-    assert checkout_page.is_zip_code_valid()
+    pytest.assume(checkout_page.is_zip_code_valid())
 
     checkout_page.click_finish()
 
-    assert driver.current_url == "https://www.saucedemo.com/checkout-complete.html"
+    pytest.assume(driver.current_url == "https://www.saucedemo.com/checkout-complete.html")
+    
 
 def test_sql_injection(driver):
     login_page = LoginPage(driver)
@@ -117,10 +113,10 @@ def test_sql_injection(driver):
 
 
     login_page.login("' OR '1'='1", "' OR '1'='1")
-    assert login_page.error_button_is_shown()
+    pytest.assume(login_page.error_button_is_shown())
 
     login_page.login("' UNION SELECT 'username', 'password' FROM 'users' --", "")
-    assert login_page.error_button_is_shown()
+    pytest.assume(login_page.error_button_is_shown())
 
     login_page.login("admin' --", "")
-    assert login_page.error_button_is_shown()
+    pytest.assume(login_page.error_button_is_shown())

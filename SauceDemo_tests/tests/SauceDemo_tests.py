@@ -1,3 +1,6 @@
+
+#ARCHAIC, DO NOT USE -- JUST FOR REFRENCE TO SEE PROGRESS
+
 import selenium
 import selenium.webdriver as webdriver
 from selenium.webdriver.support.ui import Select
