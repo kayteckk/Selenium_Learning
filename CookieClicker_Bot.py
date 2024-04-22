@@ -1,10 +1,9 @@
 import selenium.webdriver as webdriver
 from selenium.webdriver.common.by import By
-import time
-from pynput import keyboard
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from pynput import keyboard
+import time
 import json
 
 class SeleniumBot():
@@ -14,21 +13,9 @@ class SeleniumBot():
         self.driver = webdriver.Chrome(options=self.options)
         self.driver.get("https://orteil.dashnet.org/cookieclicker/")
         self.load_local_storage()
-        self.driver.implicitly_wait(2)
-        try:
-            consent = self.driver.find_element(By.CLASS_NAME,"fc-button")
-            if consent.is_displayed() and consent.isenabled():
-                consent.click()
-        except:
-            print("Not found")
-        try:
-            langSelect = self.driver.find_element(By.CLASS_NAME,"langSelectButton")
-            if langSelect.is_displayed() and langSelect.isenabled():
-                langSelect.click()
-        except:
-            print("Not found")
+        self.wait = WebDriverWait(self.driver, 2)
         self.running = True
-        self.cookie = self.driver.find_element(By.ID, "bigCookie")
+        self.cookie = self.wait.until(EC.visibility_of_element_located((By.ID, "bigCookie")))
         self.timer = 0
 
     def save_local_storage(self, path="local_storage.json"):
@@ -50,11 +37,7 @@ class SeleniumBot():
 
     def click_cookie(self):
         self.focus_window()
-        try:
-            self.cookie = self.driver.find_element(By.ID, "bigCookie")
-            self.cookie.click()
-        except Exception as e:
-            print(f"Error in click_cookie: {e}")
+        self.cookie.click()
 
     def on_press(self, key):
         if key == keyboard.KeyCode.from_char('q'):
@@ -67,26 +50,20 @@ class SeleniumBot():
 
     def buy_store_upgrade(self):
         try:
-            store_upgrade = self.driver.find_element(By.ID,"upgrade0")
-            if store_upgrade.is_displayed() and store_upgrade.is_enabled():
-                store_upgrade.click()
-        except Exception as e:
-            print(f"Error in buy_store_upgrade: {e}")
+            store_upgrade = self.wait.until(EC.visibility_of_element_located((By.ID, "upgrade0")))
+            store_upgrade.click()
+        except:
+            Print("Not enough cookies.")
 
     def buy_items(self):
         try:
-            items = self.driver.find_elements(By.CSS_SELECTOR, ".product.unlocked.enabled")
+            items = self.wait.until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, ".product.unlocked.enabled")))
             for item in items[::-1]:
-                try:
-                    item_id = item.get_attribute('id')
-                    refreshed_item = self.driver.find_element(By.ID, item_id)
-                    if refreshed_item.is_displayed() and refreshed_item.is_enabled():
-                        refreshed_item.click()
-                except Exception as e:
-                    print(f"Error while clicking an item in buy_items: {e}")
-        except Exception as e:
-            print(f"Error in buy_items: {e}")
-
+                item_id = item.get_attribute('id')
+                refreshed_item = self.wait.until(EC.visibility_of_element_located((By.ID, item_id)))
+                refreshed_item.click()
+        except:
+            print("Not enough cookies.")
 
     def main(self):
         self.start_listening()
